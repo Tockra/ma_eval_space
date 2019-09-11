@@ -46,7 +46,8 @@ fn measure<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T
     for dir in read_dir(format!("../ma_titan/testdata/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
-
+        println!("{:?}",path);
+        
         let buf = BufReader::new(File::open(path).unwrap());
         
         
