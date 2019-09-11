@@ -61,7 +61,7 @@ fn measure<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T
         std::mem::size_of_val(&x);
         let build_size = change.bytes_allocated + change.bytes_allocated.max(0);
         let final_size = change.bytes_allocated as isize + change.bytes_reallocated + change.bytes_deallocated as isize;
-        writeln!(result, "RESULT algo={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,build_size,final_size ).unwrap(); 
+        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,build_size,final_size ).unwrap(); 
     }
 }
 
