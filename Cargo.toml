@@ -9,6 +9,9 @@ edition = "2018"
 [dependencies]
 stats_alloc = "0.1.8"
 ma_titan = { path = "../ma_titan/" }
+boomphf = {git = "https://github.com/Tockra/rust-boomphf.git"}
 uint = { git = "https://github.com/Tockra/uint.git" }
 serde = "1.0.99"
 rmp-serde = "0.13.7"
+rand = "0.7.0"
+rand_pcg = "0.2.0"
