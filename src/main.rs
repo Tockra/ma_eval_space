@@ -19,6 +19,7 @@ use std::io::{BufWriter, Write};
 #[global_allocator]
 static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
 use std::collections::HashMap;
+use boomphf::Mphf;
 
 fn main() {
     let mut result = BufWriter::new(OpenOptions::new()
@@ -26,8 +27,8 @@ fn main() {
         .write(true)
         .truncate(true)
         .create(true)
-        .open("stats_hashmap_size.txt").unwrap());
-        //.open("stats_mphf_size.txt").unwrap());
+        //.open("stats_hashmap_size.txt").unwrap());
+        .open("stats_mphf_size.txt").unwrap());
     //measure::<u40,STree<u40>>(&mut result);
 
     //measure::<u40,BinarySearch>(&mut result);
@@ -37,17 +38,19 @@ fn main() {
     // dropped before we check the statistics
 
     for i in 1..u16::max_value() {
-        if i%1000==0 {
-            //let keys = (0..i).collect();
+        if i%1000==1 {
+            let keys = (0..i).collect();
             let mut reg = Region::new(&GLOBAL);
-            //let h = Mphf::new_parallel(2.0, &keys, None);
-            let h: HashMap<u16,usize> = HashMap::with_capacity(i as usize);
+            let h = Mphf::new_parallel(2.0, &keys, None);
+            //let h: HashMap<u16,usize> = HashMap::with_capacity(i as usize);
             let change = reg.change_and_reset();
            
             let build_size = change.bytes_allocated as isize + change.bytes_reallocated.max(0) + std::mem::size_of_val(&h) as isize;
             let final_size = change.bytes_allocated as isize + change.bytes_reallocated - change.bytes_deallocated as isize + std::mem::size_of_val(&h) as isize;
             
             writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
+           // writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
+        
         }
     }
 }
