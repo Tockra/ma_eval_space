@@ -24,10 +24,15 @@ use bench_data::BinarySearch;
 static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
 
 fn main() {
-    
-    measure::<u40,STree<u40>>();
+    let mut result = BufWriter::new(OpenOptions::new()
+        .read(true)
+        .write(true)
+        .truncate(true)
+        .create(true)
+        .open("stats.txt").unwrap());
+    measure::<u40,STree<u40>>(&mut result);
 
-    measure::<u40,BinarySearch>();
+    measure::<u40,BinarySearch>(&mut result);
 
     
     // Used here to ensure that the value is not
@@ -35,33 +40,29 @@ fn main() {
     
 }
 
-fn measure<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>() {
-    let mut result = BufWriter::new(OpenOptions::new()
-        .read(true)
-        .write(true)
-        .truncate(true)
-        .create(true)
-        .open("stats.txt").unwrap());
+fn measure<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
     for dir in read_dir(format!("../ma_titan/testdata/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
-        
+
         let buf = BufReader::new(File::open(path).unwrap());
         
         
         let mut values = Deserializer::new(buf);
+
+        let mut reg = Region::new(&GLOBAL);
         let values: Vec<E> = Deserialize::deserialize(&mut values).unwrap();
         let len = values.len();
 
-        let reg = Region::new(&GLOBAL);
+ 
         let x = T::new(values);
-        let change = reg.change();
-        
-        std::mem::size_of_val(&x);
-        let build_size = change.bytes_allocated + change.bytes_allocated.max(0);
-        let final_size = change.bytes_allocated as isize + change.bytes_reallocated + change.bytes_deallocated as isize;
+        let change = reg.change_and_reset();
+        println!("{:?}",change);
+        let build_size = change.bytes_allocated as isize + change.bytes_reallocated.max(0) + std::mem::size_of_val(&x) as isize;
+        let final_size = change.bytes_allocated as isize + change.bytes_reallocated - change.bytes_deallocated as isize + std::mem::size_of_val(&x) as isize;
+        println!("{} + {} - {} + {}", change.bytes_allocated, change.bytes_reallocated, change.bytes_deallocated,std::mem::size_of_val(&x));
         writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,build_size,final_size ).unwrap(); 
     }
 }
