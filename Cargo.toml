@@ -7,8 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-stats_alloc = "0.1.8"
-ma_titan = { path = "../ma_titan/" }
+stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
+ma_titan = { git = "https://github.com/Tockra/ma_titan.git" }
 uint = { git = "https://github.com/Tockra/uint.git" }
 serde = "1.0.99"
 rmp-serde = "0.13.7"
