@@ -59,11 +59,8 @@ fn measure<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T
  
         let x = T::new(values);
         let change = reg.change_and_reset();
-        println!("{:?}",change);
-        let build_size = change.bytes_allocated as isize + change.bytes_reallocated.max(0) + std::mem::size_of_val(&x) as isize;
-        let final_size = change.bytes_allocated as isize + change.bytes_reallocated - change.bytes_deallocated as isize + std::mem::size_of_val(&x) as isize;
-        println!("{} + {} - {} + {}", change.bytes_allocated, change.bytes_reallocated, change.bytes_deallocated,std::mem::size_of_val(&x));
-        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,build_size,final_size ).unwrap(); 
+
+        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
     }
 }
 
