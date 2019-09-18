@@ -10,6 +10,7 @@ use std::fs::{OpenOptions, File, read_dir};
 use std::io::{BufWriter, BufReader, Write};
 use ma_titan::default::immutable::{STree, BinarySearch};
 use ma_titan::internal::PredecessorSetStatic;
+use std::time::{Instant};
 
 use uint::u40;
 use uint::Typable;
@@ -22,6 +23,7 @@ use rmps::Deserializer;
 static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
 
 fn main() {
+    let now = Instant::now();
     let mut result = BufWriter::new(OpenOptions::new()
         .read(true)
         .write(true)
@@ -38,6 +40,8 @@ fn main() {
     
     // Used here to ensure that the value is not
     // dropped before we check the statistics
+
+    println!("Ausführungsdauer {}", now.elapsed().as_secs());
     
 }
 
