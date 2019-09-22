@@ -8,7 +8,9 @@ use std::alloc::System;
 use std::fmt::Debug;
 use std::fs::{OpenOptions, File, read_dir};
 use std::io::{BufWriter, BufReader, Write};
-use ma_titan::default::immutable::{STree, BinarySearch};
+use ma_titan::default::immutable::STree;
+use ma_titan::benches::BinarySearch;
+
 use ma_titan::internal::PredecessorSetStatic;
 use std::time::{Instant};
 
