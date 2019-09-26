@@ -28,7 +28,7 @@ static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 1 {
+    if args.len() != 2 {
         println!("Bitte genau ein Argument übergeben!");
     }
 
@@ -89,7 +89,7 @@ fn main() {
 /// mit elementen E = {u40,u48,u64} .
 fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
-    for dir in read_dir(format!("../ma_titan/testdata/uniform/{}/", E::TYPE)).unwrap() {
+    for dir in read_dir(format!("./testdata/uniform/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
@@ -116,7 +116,7 @@ fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64> + Deserialize
 /// mit elementen E = {u40,u48,u64} .
 fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
-    for dir in read_dir(format!("../ma_titan/testdata/normal/bereich_viertel/{}/", E::TYPE)).unwrap() {
+    for dir in read_dir(format!("./testdata/normal/bereich_viertel/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
@@ -143,7 +143,7 @@ fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64> + Dese
 /// mit elementen E = {u40,u48,u64} .
 fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
-    for dir in read_dir(format!("../ma_titan/testdata/normal/bereich_komplett/{}/", E::TYPE)).unwrap() {
+    for dir in read_dir(format!("./testdata/normal/bereich_komplett/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
