@@ -31,13 +31,13 @@ fn main() {
         .write(true)
         .truncate(true)
         .create(true)
-        .open("stats_uniform.txt").unwrap());
+        .open("stats_normal_viertel.txt").unwrap());
 
     // Messen für STree<u40>
-    measure_uniform::<u40,STree<u40>>(&mut result);
+    measure_normal_viertel::<u40,STree<u40>>(&mut result);
 
     // Messen für BinarySearch<u40> (Baseline)
-    measure_uniform::<u40,BinarySearch<u40>>(&mut result);
+    measure_normal_viertel::<u40,BinarySearch<u40>>(&mut result);
 
     
     // Used here to ensure that the value is not
