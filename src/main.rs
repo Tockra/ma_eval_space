@@ -8,12 +8,7 @@ use std::alloc::System;
 
 use std::fs::{OpenOptions};
 use std::io::{BufWriter, Write};
-
-
-
-
-
-
+use std::env;
 
 
 #[global_allocator]
@@ -22,35 +17,60 @@ use std::collections::HashMap;
 use boomphf::Mphf;
 
 fn main() {
-    let mut result = BufWriter::new(OpenOptions::new()
-        .read(true)
-        .write(true)
-        .truncate(true)
-        .create(true)
-    //    .open("stats_hashmap_size.txt").unwrap());
-        .open("stats_mphf_size.txt").unwrap());
-    //measure::<u40,STree<u40>>(&mut result);
+    let args: Vec<String> = env::args().collect();
 
-    //measure::<u40,BinarySearch>(&mut result);
-
-    
-    // Used here to ensure that the value is not
-    // dropped before we check the statistics
-
-    for i in 1..1024 {
-        let keys = (0..i).collect();
-        let mut reg = Region::new(&GLOBAL);
-        let h = Mphf::new_parallel(2.0, &keys, None);
-        //let h: HashMap<u16,usize> = HashMap::with_capacity(i as usize);
-        let change = reg.change_and_reset();
-        
-        let build_size = change.bytes_max_used + std::mem::size_of_val(&h);
-        let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
-        
-        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
-        //writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
-    
+    if args.len() != 2 {
+        println!("Bitte gebe an, welche Hashfunktion du evaluieren möchtest!");
     }
+
+    match args[1].as_ref() {
+        "hashmap" => {
+            let mut result = BufWriter::new(OpenOptions::new()
+            .read(true)
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open("stats_hashmap_size.txt").unwrap());
+
+                for i in 1..1024 {
+                    let mut reg = Region::new(&GLOBAL);
+                    let h: HashMap<u16,usize> = HashMap::with_capacity(i as usize);
+                    let change = reg.change_and_reset();
+                    
+                    let build_size = change.bytes_max_used + std::mem::size_of_val(&h);
+                    let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
+                    
+                    writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
+                
+                }
+
+        },
+        "mphf" => {
+            let mut result = BufWriter::new(OpenOptions::new()
+                .read(true)
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open("stats_mphf_size.txt").unwrap());
+
+                for i in 1..1024 {
+                    let keys = (0..i).collect();
+                    let mut reg = Region::new(&GLOBAL);
+                    let h = Mphf::new_parallel(2.0, &keys, None);
+    
+                    let change = reg.change_and_reset();
+                    
+                    let build_size = change.bytes_max_used + std::mem::size_of_val(&h);
+                    let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
+                    
+                    writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
+                }
+        }
+        _ => {
+            println!("Bitte verwende {} <hashmap|mphf>",args[0]);
+        }
+    }
+   
 }
 
 
