@@ -34,14 +34,21 @@ fn main() {
 
                 for i in 1..1024 {
                     let mut reg = Region::new(&GLOBAL);
+                    let change;
+
                     let h: HashMap<u16,usize> = HashMap::with_capacity(i as usize);
+                    change = reg.change_and_reset();
+                    
+                    let build_size = change.bytes_max_used;
+                    let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
+
+                    let x = vec![0u16;i].into_boxed_slice();
                     let change = reg.change_and_reset();
-                    
-                    let build_size = change.bytes_max_used + std::mem::size_of_val(&h);
-                    let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
-                    
-                    writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
-                
+                    let build_size_base = change.bytes_max_used;
+                    let final_size_base = change.bytes_current_used;
+             
+                    writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size).unwrap(); 
+                    writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
                 }
 
         },
@@ -56,14 +63,23 @@ fn main() {
                 for i in 1..1024 {
                     let keys = (0..i).collect();
                     let mut reg = Region::new(&GLOBAL);
+                    let change;
+             
                     let h = Mphf::new_parallel(2.0, &keys, None);
-    
+                    change = reg.change_and_reset();
+     
+                    
+                    let build_size = change.bytes_max_used;
+                    let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
+                    
+                  
+                    let x = vec![0u16;i].into_boxed_slice();
                     let change = reg.change_and_reset();
-                    
-                    let build_size = change.bytes_max_used + std::mem::size_of_val(&h);
-                    let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
-                    
+                    let build_size_base = change.bytes_max_used;
+                    let final_size_base = change.bytes_current_used;
                     writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
+                    writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
+                    
                 }
         }
         _ => {
