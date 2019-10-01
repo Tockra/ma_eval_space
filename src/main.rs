@@ -108,7 +108,7 @@ fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64> + Deserialize
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
+        writeln!(result, "RESULT data_structure={}_uniform method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
     }
 }
 
@@ -135,7 +135,7 @@ fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64> + Dese
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
+        writeln!(result, "RESULT data_structure={}_normal_viertel method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
     }
 }
 
@@ -162,6 +162,6 @@ fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64> + Des
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure={} method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
+        writeln!(result, "RESULT data_structure={}_normal_komplett method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
     }
 }
