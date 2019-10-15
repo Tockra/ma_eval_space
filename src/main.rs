@@ -1,13 +1,11 @@
 extern crate stats_alloc;
-extern crate serde;
-extern crate rmp_serde as rmps;
 
 use stats_alloc::{Region, StatsAlloc, INSTRUMENTED_SYSTEM};
 
-use std::alloc::System;
 use std::fmt::Debug;
 use std::fs::{OpenOptions, File, read_dir};
-use std::io::{BufWriter, BufReader, Write};
+use std::io::{BufWriter, Write, Read};
+use std::alloc::System;
 use ma_titan::default::immutable::STree;
 use ma_titan::benches::BinarySearch;
 
@@ -17,9 +15,6 @@ use std::time::{Instant};
 use uint::u40;
 use uint::Typable;
 
-use serde::Deserialize;
-use serde::de::DeserializeOwned;
-use rmps::Deserializer;
 use std::env;
 
 #[global_allocator]
@@ -87,20 +82,15 @@ fn main() {
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen E = {u40,u48,u64} .
-fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
+fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64>, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
     for dir in read_dir(format!("./testdata/uniform/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
 
-        let buf = BufReader::new(File::open(path).unwrap());
-        
-        
-        let mut values = Deserializer::new(buf);
-
         let mut reg = Region::new(&GLOBAL);
-        let values: Vec<E> = Deserialize::deserialize(&mut values).unwrap();
+        let values = read_from_file(path.to_str().unwrap()).unwrap();
         let len = values.len();
 
  
@@ -114,20 +104,15 @@ fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64> + Deserialize
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen E = {u40,u48,u64} .
-fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
+fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64>, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
     for dir in read_dir(format!("./testdata/normal/bereich_viertel/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
 
-        let buf = BufReader::new(File::open(path).unwrap());
-        
-        
-        let mut values = Deserializer::new(buf);
-
         let mut reg = Region::new(&GLOBAL);
-        let values: Vec<E> = Deserialize::deserialize(&mut values).unwrap();
+        let values = read_from_file(path.to_str().unwrap()).unwrap();
         let len = values.len();
 
  
@@ -141,20 +126,15 @@ fn measure_normal_viertel<E: 'static + Typable + Copy + Debug + From<u64> + Dese
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen E = {u40,u48,u64} .
-fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64> + DeserializeOwned, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
+fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64>, T: PredecessorSetStatic<E>>(result: &mut BufWriter<File>) {
 
     for dir in read_dir(format!("./testdata/normal/bereich_komplett/{}/", E::TYPE)).unwrap() {
         let dir = dir.unwrap();
         let path = dir.path();
         println!("{:?}",path);
 
-        let buf = BufReader::new(File::open(path).unwrap());
-        
-        
-        let mut values = Deserializer::new(buf);
-
         let mut reg = Region::new(&GLOBAL);
-        let values: Vec<E> = Deserialize::deserialize(&mut values).unwrap();
+        let values = read_from_file(path.to_str().unwrap()).unwrap();
         let len = values.len();
 
  
@@ -164,4 +144,30 @@ fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64> + Des
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
         writeln!(result, "RESULT data_structure={}_normal_komplett method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
     }
+}
+
+pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Result<Vec<T>> {
+    let mut input = File::open(name.clone())?;
+    let mut lenv = Vec::new();
+    std::io::Read::by_ref(&mut input).take(std::mem::size_of::<usize>() as u64).read_to_end(&mut lenv)?;
+    let mut len: [u8; std::mem::size_of::<usize>()] = [0; std::mem::size_of::<usize>()];
+    for (i,b) in lenv.iter().enumerate() {
+        len[i] = *b;
+    }
+    let len: usize = usize::from_le_bytes(len);
+
+    assert!(len == (std::fs::metadata(name)?.len() as usize - std::mem::size_of::<usize>())/ std::mem::size_of::<T>());
+
+    let mut values: Vec<T> = Vec::with_capacity(len);
+    while values.len() != len {
+        let mut buffer = Vec::with_capacity(std::mem::size_of::<T>());
+        std::io::Read::by_ref(&mut input).take(std::mem::size_of::<T>() as u64).read_to_end(&mut buffer)?;
+        let mut next_value: u64 = 0;
+        for i in 0..buffer.len() {
+            next_value |= (buffer[i] as u64) << (8*i);
+        }
+
+        values.push(T::from(next_value));
+    }
+    Ok(values)
 }
