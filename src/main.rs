@@ -66,7 +66,7 @@ fn main() {
                     .open("stats_uniform.txt").unwrap());
 
                 // Messen für STree<u40>
-                measure_uniform::<u40,STree<u40>>(&mut result);
+                //measure_uniform::<u40,STree<u40>>(&mut result);
 
                 // Messen für BinarySearch<u40> (Baseline)
                 measure_uniform::<u40,BinarySearch<u40>>(&mut result);
@@ -90,15 +90,17 @@ fn measure_uniform<E: 'static + Typable + Copy + Debug + From<u64>, T: Predecess
         println!("{:?}",path);
 
         let mut reg = Region::new(&GLOBAL);
-        let values = read_from_file(path.to_str().unwrap()).unwrap();
-        let len = values.len();
+        
+        //let values = read_from_file(path.to_str().unwrap()).unwrap();
+        //let len = values.len();
+        let x = vec![u40::from(0);4194304];
+        let len = x.len();
 
- 
-        let x = T::new(values);
+        //let x = T::new(values);
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure={}_uniform method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used + std::mem::size_of_val(&x) ).unwrap(); 
+        writeln!(result, "RESULT data_structure={}_uniform method=new size={} build_size_bytes={} size_bytes={}",T::TYPE,len,change.bytes_max_used,change.bytes_current_used).unwrap(); 
     }
 }
 
@@ -146,8 +148,8 @@ fn measure_normal_komplett<E: 'static + Typable + Copy + Debug + From<u64>, T: P
     }
 }
 
-pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Result<Vec<T>> {
-    let mut input = File::open(name.clone())?;
+pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Result<Box<[T]>> {
+    let mut input = File::open(name)?;
     let mut lenv = Vec::new();
     std::io::Read::by_ref(&mut input).take(std::mem::size_of::<usize>() as u64).read_to_end(&mut lenv)?;
     let mut len: [u8; std::mem::size_of::<usize>()] = [0; std::mem::size_of::<usize>()];
@@ -169,5 +171,5 @@ pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Res
 
         values.push(T::from(next_value));
     }
-    Ok(values)
+    Ok(values.into_boxed_slice())
 }
