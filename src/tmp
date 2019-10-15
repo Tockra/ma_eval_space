@@ -1,0 +1,75 @@
+extern crate stats_alloc;
+
+
+mod bench;
+use bench::*;
+use std::fs::OpenOptions;
+use std::time::{Instant};
+use std::io::{BufWriter};
+use stats_alloc::{StatsAlloc, INSTRUMENTED_SYSTEM};
+use std::alloc::System;
+
+use uint::u40;
+
+#[global_allocator]
+static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+
+    if args.len() != 2 {
+        println!("Bitte genau ein Argument übergeben!");
+    }
+
+    let now = Instant::now();
+    match args[1].as_ref() {
+        "normal_komplett" => {
+            let mut result = BufWriter::new(OpenOptions::new()
+                .read(true)
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open("stats_normal_komplett.txt").unwrap());
+
+            // Messen für STree<u40>
+            measure_normal_komplett::<u40,STree<u40>>(&mut result);
+
+            // Messen für BinarySearch<u40> (Baseline)
+            measure_normal_komplett::<u40,BinarySearch<u40>>(&mut result);
+        },
+        "normal_viertel" => {
+            let mut result = BufWriter::new(OpenOptions::new()
+                .read(true)
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open("stats_normal_viertel.txt").unwrap());
+
+            // Messen für STree<u40>
+            measure_normal_viertel::<u40,STree<u40>>(&mut result);
+
+            // Messen für BinarySearch<u40> (Baseline)
+            measure_normal_viertel::<u40,BinarySearch<u40>>(&mut result);
+        },
+        "uniform" => {
+                let mut result = BufWriter::new(OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .truncate(true)
+                    .create(true)
+                    .open("stats_uniform.txt").unwrap());
+
+                // Messen für STree<u40>
+                //measure_uniform::<u40,STree<u40>>(&mut result);
+
+                // Messen für BinarySearch<u40> (Baseline)
+                measure_uniform::<u40,BinarySearch<u40>>(&mut result);
+        }
+        _ => {
+            println!("Bitte verwende {} <normal_komplett|normal_viertel|uniform>",args[0]);
+        }
+    };
+    
+    println!("Ausführungsdauer {}", now.elapsed().as_secs());
+    
+}
