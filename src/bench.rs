@@ -23,7 +23,7 @@ use super::GLOBAL;
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen T = {u40,u48,u64} . Diese Methode ist generisch und kann die normal-daten, die BTW-Run-Daten und gleichverteilte Daten einlesen.
 pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str) {
-    println!("Starte Laufzeitmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
+    println!("Starte Speicherplatzmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
 
     let now = Instant::now();
     std::fs::create_dir_all(format!("./output/{}/", T::TYPE)).unwrap();
@@ -32,10 +32,13 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
                 .write(true)
                 .truncate(true)
                 .create(true)
-                .open(format!("./output/{}/{}.txt", T::TYPE,data.replace("/", "_"))).unwrap());
+                .open(format!("./output/{}/{}_{}.txt", T::TYPE,E::TYPE, data.replace("/", "_"))).unwrap());
 
     for dir in read_dir(format!("./testdata/{}/{}/",data, T::TYPE)).unwrap() {
         let path = dir.unwrap().path();
+        if path.to_str().unwrap().contains("git") {
+            continue;
+        }
         println!("{:?}",path);
 
         let mut reg = Region::new(&GLOBAL);
@@ -89,7 +92,7 @@ impl<T: Int> PredecessorSetStatic<T> for VEBTree {
     const TYPE: &'static str = "vEB-Tree";
 
     fn new(elements: Box<[T]>) -> Self {
-        let mut vtree = vs::with_capacity(elements.len());
+        let mut vtree = vs::with_capacity((elements[elements.len()-1]).into() as usize);
         for &elem in elements.iter() {
             vtree.insert((elem.into()) as usize);
         }
