@@ -14,12 +14,12 @@ fn main() {
 	let args: Vec<String> = std::env::args().collect();
 
     if args.len() != 4 {
-        println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal/bereich_viertel|normal/bereich_komplett|bwt_runs>",args[0]);
+        println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal|normal|bwt_runs>",args[0]);
         return;
     }
 	
-    if args[3] != "uniform" && args[3] != "normal/bereich_viertel" && args[3] != "normal/bereich_komplett" && args[3] != "bwt_runs" {
-        println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal/bereich_viertel|normal/bereich_komplett|bwt_runs>",args[0]);
+    if args[3] != "uniform" && args[3] != "normal" && args[3] != "bwt_runs" {
+        println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs>",args[0]);
         return;
     } 
 
@@ -27,7 +27,7 @@ fn main() {
 		"u40" => stage1::<u40>(args),
 		"u48" => stage1::<u48>(args),
 		"u64" => stage1::<u64>(args),
-		_ => println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal/bereich_viertel|normal/bereich_komplett|bwt_runs>",args[0]),
+		_ => println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs>",args[0]),
     }
 }
 
@@ -37,7 +37,7 @@ fn stage1<T: Int + Typable + From<u64> + Copy + Debug>(args: Vec<String>) {
         "vebtree" => stage2::<T,VEBTree>(args[3].as_ref()),
         "btree" => stage2::<T,BTreeMap<T,T>>(args[3].as_ref()),
 		"binary" => stage2::<T,BinarySearch<T>>(args[3].as_ref()),
-        _ => println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal/bereich_viertel|normal/bereich_komplett|bwt_runs>",args[0]),
+        _ => println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs>",args[0]),
     }
 }
 
