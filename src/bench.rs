@@ -52,6 +52,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
         writeln!(result, "RESULT data_structure={}_{} method=new size={} build_size_bytes={} size_bytes={}",E::TYPE, data.replace("/", "_"),len,change.bytes_max_used,change.bytes_current_used).unwrap(); 
+        result.flush().unwrap();
     }
 
     println!("Messung beendet. Dauer {} Sekunden", now.elapsed().as_secs());
