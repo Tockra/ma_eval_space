@@ -7,8 +7,7 @@ use std::fs::OpenOptions;
 use std::time::Instant;
 
 use uint::{Typable};
-use ma_titan::default::immutable::{Int, Pointer,STree};
-use ma_titan::internal::Splittable;
+use ma_titan::default::immutable::{Int,STree};
 use vebtrees::VEBTree as vs;
 
 
@@ -130,9 +129,6 @@ impl<T: Int> PredecessorSetStatic<T> for VEBTree {
         self.veb_tree.maximum().and_then(|x| Some(T::new(x as u64)))
     } 
 
-    fn contains(&self, number: T) -> bool {
-        self.veb_tree.contains((number.into()) as usize)
-    }
 }
 
 #[derive(Clone)]
@@ -177,10 +173,6 @@ impl<T: Int>  PredecessorSetStatic<T> for BinarySearch<T> {
         } else {
             Some(self.element_list[self.element_list.len()-1])
         }
-    }
-
-    fn contains(&self, number: T) -> bool {
-        self.element_list.contains(&number)
     }
 
     const TYPE: &'static str = "BinarySearch";
@@ -243,7 +235,6 @@ pub trait PredecessorSetStatic<T> {
     fn successor(&self,number: T) -> Option<T>; // Optional
     fn minimum(&self) -> Option<T>;
     fn maximum(&self) -> Option<T>; 
-    fn contains(&self, number: T) -> bool;
 
     const TYPE: &'static str;
 }
@@ -270,43 +261,6 @@ impl<T: Int> PredecessorSetStatic<T> for STree<T> {
     fn maximum(&self) -> Option<T> {
         self.maximum()
     } 
-
-    fn contains(&self, number: T) -> bool {
-        let (i,j,k) = Splittable::split_integer_down(&number);
-        if self.root_table[i].is_null()  {
-            return false;
-        }
-
-        match self.root_table[i].get() {
-            Pointer::Level(l) => {
-                let l3_level = (*l).try_get(j);
-                if l3_level.is_none() {
-                    return false;
-                } else {
-                    let elem_index = match l3_level.unwrap().get() {
-                        Pointer::Level(l) => {
-                            (*l).try_get(k)
-                        },
-                        Pointer::Element(e) => {
-                            Some(&*e)
-                        }
-                    };
-                    
-                        
-                    if elem_index.is_none() {
-                        false
-                    } else {
-                        self.element_list[*elem_index.unwrap()] == number
-                    }
-                }
-                
-            },
-
-            Pointer::Element(e) => {
-                self.element_list[*e] == number
-            }
-        }
-    }
 }
 
 impl<T: Int>  PredecessorSetStatic<T> for BTreeMap<T,T> {
@@ -332,10 +286,6 @@ impl<T: Int>  PredecessorSetStatic<T> for BTreeMap<T,T> {
 
     fn maximum(&self) -> Option<T>{
         self.range(T::from(0)..).rev().next().map(|x| *x.0)
-    }
-
-    fn contains(&self, number: T) -> bool {
-        self.contains_key(&number)
     }
 
     const TYPE: &'static str = "B-Baum";
