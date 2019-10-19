@@ -39,17 +39,20 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
             continue;
         }
 
-        let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
+        if data != "bwt_runs" {
+            let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
 
-        if var == "1" {
-            if i > 28 {
-                continue;
-            }
-        } else {
-                if i != 29 {
-                continue;
+            if var == "1" {
+                if i > 28 {
+                    continue;
+                }
+            } else {
+                    if i != 29 {
+                    continue;
+                }
             }
         }
+    
         println!("{:?}",path);
 
         let mut reg = Region::new(&GLOBAL);
