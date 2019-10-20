@@ -31,7 +31,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
                 .write(true)
                 .truncate(true)
                 .create(true)
-                .open(format!("./output/{}/{}_{}.txt", T::TYPE,E::TYPE, data.replace("/", "_"))).unwrap());
+                .open(format!("./output/{}/{}_{}_{}.txt", T::TYPE,E::TYPE, data.replace("/", "_"), var)).unwrap());
 
     for dir in read_dir(format!("./testdata/{}/{}/",data, T::TYPE)).unwrap() {
         let path = dir.unwrap().path();
@@ -47,7 +47,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
                     continue;
                 }
             } else {
-                    if i != 29 {
+                if i != 29 {
                     continue;
                 }
             }
