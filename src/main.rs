@@ -63,7 +63,7 @@ fn main() {
 
                 for i in 1..2048 {
                     let i = i as usize;
-                    if i % 10 == 0 {
+                    if i % 1 == 0 {
                         let keys = (0..i).collect();
                         {
                         let reg = Region::new(&GLOBAL);
@@ -74,11 +74,13 @@ fn main() {
                         let change = reg.change();
         
                         
-                        let build_size = change.bytes_allocated - change.bytes_deallocated;
+                        let build_size = change.bytes_max_used;
                         
-                        let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
-                        
-                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8. ).unwrap(); 
+                        let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
+                        println!("{}", std::mem::size_of_val(&h));
+                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8. ).unwrap();
+                        // 16 da ein extra Array vorhanden ist das 16 Byte braucht (8 Zeiger, 8 Len)
+                        writeln!(result, "RESULT data_structure=Vektor method=new size={} build_size_bytes=0 size_bytes={}",i,(16.+(i as f64) * 2.)/(i as f64) *8. ).unwrap(); 
                     }
                     }
                 
