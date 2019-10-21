@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
-ma_titan = { git = "https://github.com/Tockra/ma_titan.git" }
+ma_titan = { git = "https://github.com/Tockra/ma_titan.git", branch="space_efficient_128" }
 uint = { git = "https://github.com/Tockra/uint.git" }
 rmp-serde = "0.13.7"
 vebtrees = {git = "https://github.com/Tockra/rust-vebtrees.git"}
