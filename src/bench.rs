@@ -43,11 +43,11 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
             let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
 
             if var == "1" {
-                if i > 28 {
+                if i > 29 {
                     continue;
                 }
             } else {
-                if i != 29 {
+                if i <= 29 {
                     continue;
                 }
             }
@@ -56,7 +56,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
         println!("{:?}",path);
         
         // Keine Ahnung ob das wirklich nötig ist, aber zur Sicherheit!
-        std::thread::sleep_ms(3000);
+        std::thread::sleep(std::time::Duration::from_millis(3000));
         let mut reg = Region::new(&GLOBAL);
         
         let values = read_from_file(path.to_str().unwrap()).unwrap();
