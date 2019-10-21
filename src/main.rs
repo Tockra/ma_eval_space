@@ -42,13 +42,8 @@ fn main() {
                     let build_size = change.bytes_max_used;
                     let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
 
-                    let x = vec![0u16;i].into_boxed_slice();
-                    let change = reg.change_and_reset();
-                    let build_size_base = change.bytes_max_used;
-                    let final_size_base = change.bytes_current_used;
              
                     writeln!(result, "RESULT data_structure=HashMap-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size).unwrap(); 
-                    writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
                 }
 
         },
@@ -59,28 +54,25 @@ fn main() {
                 .truncate(true)
                 .create(true)
                 .open("stats_mphf_size.txt").unwrap());
-
-                for i in 1..u16::max_value() {
-                    let i = i as usize;
-                    if i % 1000 == 1 {
-                        let keys = (0..i).collect();
-                        let mut reg = Region::new(&GLOBAL);
-                        let change;
                 
-                        let h = Mphf::new_parallel(2.0, &keys, None);
-                        change = reg.change_and_reset();
+                for i in 1..1024 {
+                    let i = i as usize;
+                    if i % 10 == 0 {
+                        let keys = (0..i).collect();
+                        
+                        let mut reg = Region::new(&GLOBAL);
+                
+                        let h = Mphf::new_parallel(1.7, &keys, None);
+
+  
+                        let change = reg.change();
         
                         
                         let build_size = change.bytes_max_used;
+                        
                         let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
                         
-                    
-                        let x = vec![0u16;i].into_boxed_slice();
-                        let change = reg.change_and_reset();
-                        let build_size_base = change.bytes_max_used;
-                        let final_size_base = change.bytes_current_used;
-                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,(final_size as f64)/(i as f64) ).unwrap(); 
-                        writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
+                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8. ).unwrap(); 
                     
                     }
                 
