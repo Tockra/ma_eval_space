@@ -54,7 +54,9 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
         }
     
         println!("{:?}",path);
-
+        
+        // Keine Ahnung ob das wirklich nötig ist, aber zur Sicherheit!
+        std::thread::sleep_ms(3000);
         let mut reg = Region::new(&GLOBAL);
         
         let values = read_from_file(path.to_str().unwrap()).unwrap();
