@@ -54,13 +54,19 @@ fn main() {
                 .truncate(true)
                 .create(true)
                 .open("stats_mphf_size.txt").unwrap());
-                
-                for i in 1..1024 {
+
+                let h = Mphf::new_parallel(1.7, &(0..100).collect(), None);
+
+                std::thread::sleep_ms(3000);
+
+            
+
+                for i in 1..2048 {
                     let i = i as usize;
                     if i % 10 == 0 {
                         let keys = (0..i).collect();
-                        
-                        let mut reg = Region::new(&GLOBAL);
+                        {
+                        let reg = Region::new(&GLOBAL);
                 
                         let h = Mphf::new_parallel(1.7, &keys, None);
 
@@ -73,7 +79,7 @@ fn main() {
                         let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
                         
                         writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8. ).unwrap(); 
-                    
+                    }
                     }
                 
                 }
