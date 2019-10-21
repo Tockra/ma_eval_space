@@ -68,7 +68,7 @@ fn main() {
                         let change = reg.change();
         
                         
-                        let build_size = change.bytes_max_used;
+                        let build_size = change.bytes_allocated - change.bytes_deallocated;
                         
                         let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
                         
