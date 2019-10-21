@@ -60,26 +60,30 @@ fn main() {
                 .create(true)
                 .open("stats_mphf_size.txt").unwrap());
 
-                for i in 1..1024 {
-                    let keys = (0..i).collect();
-                    let mut reg = Region::new(&GLOBAL);
-                    let change;
-             
-                    let h = Mphf::new_parallel(2.0, &keys, None);
-                    change = reg.change_and_reset();
-     
+                for i in 1..u16::max_value() {
+                    let i = i as usize;
+                    if i % 1000 == 1 {
+                        let keys = (0..i).collect();
+                        let mut reg = Region::new(&GLOBAL);
+                        let change;
+                
+                        let h = Mphf::new_parallel(2.0, &keys, None);
+                        change = reg.change_and_reset();
+        
+                        
+                        let build_size = change.bytes_max_used;
+                        let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
+                        
                     
-                    let build_size = change.bytes_max_used;
-                    let final_size = change.bytes_current_used; // Die gespeicherten Elemente abziehen
+                        let x = vec![0u16;i].into_boxed_slice();
+                        let change = reg.change_and_reset();
+                        let build_size_base = change.bytes_max_used;
+                        let final_size_base = change.bytes_current_used;
+                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,(final_size as f64)/(i as f64) ).unwrap(); 
+                        writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
                     
-                  
-                    let x = vec![0u16;i].into_boxed_slice();
-                    let change = reg.change_and_reset();
-                    let build_size_base = change.bytes_max_used;
-                    let final_size_base = change.bytes_current_used;
-                    writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,final_size ).unwrap(); 
-                    writeln!(result, "RESULT data_structure=Base method=new size={} build_size_bytes={} size_bytes={}",i,build_size_base,final_size_base ).unwrap(); 
-                    
+                    }
+                
                 }
         }
         _ => {
@@ -87,108 +91,4 @@ fn main() {
         }
     }
    
-}
-
-
-mod bench_data {
-    use uint::u40;
-    use ma_titan::internal::PredecessorSetStatic;
-
-    // Todo Generics
-    type Int = u40;
-
-    #[derive(Clone)]
-    pub struct BinarySearch {
-        element_list: Box<[Int]>
-    }
-
-    impl PredecessorSetStatic<Int> for BinarySearch {
-        fn new(elements: Vec<Int>) -> Self {
-            Self {
-                element_list: elements.into_boxed_slice(),
-            }
-        }
-
-        fn predecessor(&self,number: Int) -> Option<Int> {
-            if self.element_list.len() == 0 {
-                None
-            } else {
-                self.pred(number, 0, self.element_list.len()-1)
-            }
-        }
-
-        fn successor(&self,number: Int) -> Option<Int>{
-            if self.element_list.len() == 0 {
-                None
-            } else {
-                self.succ(number, 0, self.element_list.len()-1)
-            }
-        }
-        
-        fn minimum(&self) -> Option<Int>{
-            if self.element_list.len() == 0 {
-                None
-            } else {
-                Some(self.element_list[0])
-            }
-        }
-
-        fn maximum(&self) -> Option<Int>{
-            if self.element_list.len() == 0 {
-                None
-            } else {
-                Some(self.element_list[self.element_list.len()-1])
-            }
-        }
-
-        fn contains(&self, number: Int) -> bool {
-            self.element_list.contains(&number)
-        }
-
-        const TYPE: &'static str = "BinarySearch";
-    }
-
-    impl BinarySearch {
-        fn succ(&self, element: Int, l: usize, r: usize) -> Option<Int> {
-            let mut l = l;
-            let mut r = r;
-
-            while r != l {
-                let m = (l+r)/2;
-                if self.element_list[m] > element {
-                    r = m;
-                } else {
-                    l = m+1;
-                }
-            }
-            if self.element_list[l] >= element {
-                Some(self.element_list[l])
-            } else {
-                None
-            }
-        }
-
-        fn pred(&self, element: Int, l: usize, r: usize) -> Option<Int> {
-            let mut l = l;
-            let mut r = r;
-
-            while l != r {
-                let m = (l+r)/2;
-                if self.element_list[m] < element {
-                    r = m
-                } else {
-                    l = m+1;
-                }
-            }
-    
-            if element >= self.element_list[l] {
-                Some(self.element_list[l])
-            } else {
-                None
-            }
-        }
-
-
-    }
-
 }
