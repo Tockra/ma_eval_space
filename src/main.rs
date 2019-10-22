@@ -1,8 +1,7 @@
 mod bench;
 use bench::*;
-use ma_titan::default::immutable::{Int, STree};
+use ma_titan::default::immutable::{Int};
 use uint::*;
-use std::collections::BTreeMap;
 use std::fmt::Debug;
 use stats_alloc::{StatsAlloc, INSTRUMENTED_SYSTEM};
 use std::alloc::System;
@@ -33,14 +32,14 @@ fn main() {
 
 fn stage1<T: Int + Typable + From<u64> + Copy + Debug>(args: Vec<String>) {
     match args[1].as_ref() {
-        "stree" => stage2::<T,STree<T>>(args[3].as_ref(), args[4].as_ref()),
-        "vebtree" => stage2::<T,VEBTree>(args[3].as_ref(), args[4].as_ref()),
-        "btree" => stage2::<T,BTreeMap<T,T>>(args[3].as_ref(), args[4].as_ref()),
-		"binary" => stage2::<T,BinarySearch<T>>(args[3].as_ref(), args[4].as_ref()),
+        "stree" => stage2::<T>(args[3].as_ref(), args[4].as_ref()),
+        //"vebtree" => stage2::<T,VEBTree>(args[3].as_ref(), args[4].as_ref()),
+        //"btree" => stage2::<T,BTreeMap<T,T>>(args[3].as_ref(), args[4].as_ref()),
+		//"binary" => stage2::<T,BinarySearch<T>>(args[3].as_ref(), args[4].as_ref()),
         _ => println!("Bitte verwende {} <stree|vebtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs> <variant=1,2>",args[0]),
     }
 }
 
-fn stage2<T: Int + Typable + From<u64> + Copy + Debug, U: PredecessorSetStatic<T>>(arg: &str, var: &str) {
-    measure::<T,U>(arg, var);
+fn stage2<T: Int + Typable + From<u64> + Copy + Debug>(arg: &str, var: &str) {
+    measure::<T>(arg, var);
 }
