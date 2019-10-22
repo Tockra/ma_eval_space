@@ -8,6 +8,6 @@ edition = "2018"
 
 [dependencies]
 stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
-ma_titan = { git = "https://github.com/Tockra/ma_titan.git", branch="space_efficient" }
+ma_titan = { git = "https://github.com/Tockra/ma_titan.git", branch="space_efficient_space" }
 uint = { git = "https://github.com/Tockra/uint.git" }
 vebtrees = {git = "https://github.com/Tockra/rust-vebtrees.git"}
