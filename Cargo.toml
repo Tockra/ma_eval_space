@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 stats_alloc = {git = "https://github.com/Tockra/stats_alloc.git"}
 ma_titan = { path = "../ma_titan/" }
-boomphf = {git = "https://github.com/10XGenomics/rust-boomphf.git"}
+boomphf = {git = "https://github.com/Tockra/rust-boomphf.git"}
 uint = { git = "https://github.com/Tockra/uint.git" }
 serde = "1.0.99"
 rmp-serde = "0.13.7"

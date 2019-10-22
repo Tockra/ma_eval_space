@@ -31,7 +31,7 @@ fn main() {
             .truncate(true)
             .create(true)
             .open("stats_hashmap_size.txt").unwrap());
-            let item = 0_u8;
+            let item = 0_u64;
                 for i in 1..u16::max_value() {
                     let i = i as usize;
                     if i % 1 == 0 {
@@ -39,14 +39,16 @@ fn main() {
                         {
                         let reg = Region::new(&GLOBAL);
                 
-                        let mut h = hashbrown::HashMap::with_capacity(i);
+                        let mut h = std::collections::HashMap::with_capacity(i+1);
                         for k in keys.into_iter() {
                             h.insert(k, item);
                         }
 
-  
-                        let change = reg.change();
+                        h.shrink_to_fit();
         
+    
+                        let change = reg.change();
+
                         
                         let build_size = change.bytes_max_used;
                         
@@ -69,9 +71,8 @@ fn main() {
                 .open("stats_mphf_size.txt").unwrap());
 
                 let h = Mphf::new_parallel(1.7, &(0..100).collect(), None);
-
+                println!("{}", std::mem::size_of_val(&h));
                 std::thread::sleep_ms(3000);
-
             
 
                 for i in 1..2048 {
