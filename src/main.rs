@@ -1,6 +1,6 @@
 mod bench;
 use bench::*;
-use ma_titan::default::immutable::{Int};
+use ma_titan::default::immutable::{STree, Int};
 use uint::*;
 use std::fmt::Debug;
 use stats_alloc::{StatsAlloc, INSTRUMENTED_SYSTEM};
