@@ -8,7 +8,6 @@ use std::time::Instant;
 
 use uint::{Typable};
 use ma_titan::default::immutable::{Int,STree};
-use vebtrees::VEBTree as vs;
 
 
 use stats_alloc::Region;
@@ -100,40 +99,32 @@ pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Res
     Ok(values.into_boxed_slice())
 }
 
-#[derive(Clone,Debug, PartialEq, Eq)]
-pub struct VEBTree {
-    veb_tree: vs<usize>
+#[derive(Clone)]
+pub struct RBTree<T> where T: Int + Default + num::Bounded {
+    rb: treez::rb::TreeRb<T,T>
 }
 
-impl<T: Int> PredecessorSetStatic<T> for VEBTree {
-    const TYPE: &'static str = "vEB-Tree";
+impl<T: Int + Default + num::Bounded> PredecessorSetStatic<T> for RBTree<T> {
+    const TYPE: &'static str = "Rot-Schwarz-Baum";
 
     fn new(elements: Box<[T]>) -> Self {
-        let mut vtree = vs::with_capacity((elements[elements.len()-1]).into() as usize);
-        for &elem in elements.iter() {
-            vtree.insert((elem.into()) as usize);
+        let mut rb = treez::rb::TreeRb::with_capacity(elements.len());
+        for &elem in elements.into_iter() {
+            rb.insert(elem,elem);
         }
+        rb.shrink_to_fit();
         Self {
-            veb_tree: vtree,
+            rb: rb,
         }
     }
 
     fn predecessor(&self,number: T) -> Option<T> {
-        self.veb_tree.findprev((number.into()) as usize).and_then(|x| Some(T::new(x as u64)))
+        self.rb.predecessor(number).map(|x| *x)
     }
 
     fn successor(&self,number: T) -> Option<T> {
-        self.veb_tree.findnext((number.into()) as usize).and_then(|x| Some(T::new(x as u64)))
+        self.rb.successor(number).map(|x| *x)
     }
-
-    fn minimum(&self) -> Option<T> {
-        self.veb_tree.minimum().and_then(|x| Some(T::new(x as u64)))
-    }
-
-    fn maximum(&self) -> Option<T> {
-        self.veb_tree.maximum().and_then(|x| Some(T::new(x as u64)))
-    } 
-
 }
 
 #[derive(Clone)]
@@ -161,22 +152,6 @@ impl<T: Int>  PredecessorSetStatic<T> for BinarySearch<T> {
             None
         } else {
             self.succ(number, 0, self.element_list.len()-1)
-        }
-    }
-    
-    fn minimum(&self) -> Option<T>{
-        if self.element_list.len() == 0 {
-            None
-        } else {
-            Some(self.element_list[0])
-        }
-    }
-
-    fn maximum(&self) -> Option<T>{
-        if self.element_list.len() == 0 {
-            None
-        } else {
-            Some(self.element_list[self.element_list.len()-1])
         }
     }
 
@@ -238,8 +213,6 @@ pub trait PredecessorSetStatic<T> {
     fn new(elements: Box<[T]>) -> Self;
     fn predecessor(&self,number: T) -> Option<T>;
     fn successor(&self,number: T) -> Option<T>; // Optional
-    fn minimum(&self) -> Option<T>;
-    fn maximum(&self) -> Option<T>; 
 
     const TYPE: &'static str;
 }
@@ -258,14 +231,6 @@ impl<T: Int> PredecessorSetStatic<T> for STree<T> {
     fn successor(&self,number: T) -> Option<T> {
         self.locate_or_succ(number).and_then(|x| Some(self.element_list[x]))
     }
-
-    fn minimum(&self) -> Option<T> {
-        self.minimum()
-    }
-
-    fn maximum(&self) -> Option<T> {
-        self.maximum()
-    } 
 }
 
 impl<T: Int>  PredecessorSetStatic<T> for BTreeMap<T,T> {
@@ -283,14 +248,6 @@ impl<T: Int>  PredecessorSetStatic<T> for BTreeMap<T,T> {
 
     fn successor(&self,number: T) -> Option<T>{
         self.range(number..).next().map(|x| *x.0)
-    }
-    
-    fn minimum(&self) -> Option<T>{
-        self.range(T::from(0)..).next().map(|x| *x.0)
-    }
-
-    fn maximum(&self) -> Option<T>{
-        self.range(T::from(0)..).rev().next().map(|x| *x.0)
     }
 
     const TYPE: &'static str = "B-Baum";
