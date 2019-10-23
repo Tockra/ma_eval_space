@@ -21,7 +21,7 @@ use super::GLOBAL;
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen T = {u40,u48,u64} . Diese Methode ist generisch und kann die normal-daten, die BTW-Run-Daten und gleichverteilte Daten einlesen.
-pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: &str) {
+pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: &str, name: &str) {
     println!("Starte Speicherplatzmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
 
     let now = Instant::now();
@@ -31,7 +31,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
                 .write(true)
                 .truncate(true)
                 .create(true)
-                .open(format!("./output/{}/{}_{}_{}.txt", T::TYPE,E::TYPE, data.replace("/", "_"), var)).unwrap());
+                .open(format!("./output/{}/{}_{}_{}_{}.txt", T::TYPE,E::TYPE, name, data.replace("/", "_"), var)).unwrap());
 
     for dir in read_dir(format!("./testdata/{}/{}/",data, T::TYPE)).unwrap() {
         let path = dir.unwrap().path();
@@ -43,7 +43,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
             let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
 
             if var == "1" {
-                if i > 29 {
+                if i > 29 && i <= 30 {
                     continue;
                 }
             } else {
