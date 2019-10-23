@@ -7,15 +7,15 @@ git merge --no-edit master &&
 git push &&
 git checkout fnv_hash &&
 git pull &&
-git merge --no-edit master &&
+git merge --no-edit space_efficient &&
 git push &&
 git checkout rustc_hash_hash &&
 git pull &&
-git merge --no-edit master &&
+git merge --no-edit space_efficient &&
 git push &&
 git checkout hash_brown_hash &&
 git pull &&
-git merge --no-edit master &&
+git merge --no-edit space_efficient &&
 git push &&
 git checkout space_efficient_128 &&
 git pull &&
