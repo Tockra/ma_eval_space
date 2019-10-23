@@ -19,9 +19,9 @@ git merge --no-edit master &&
 git push &&
 git checkout space_efficient_128 &&
 git pull &&
-git merge --no-edit master &&
+git merge --no-edit space_efficient &&
 git push 
 git checkout space_efficient_max &&
 git pull &&
-git merge --no-edit master &&
+git merge --no-edit space_efficient &&
 git push 
