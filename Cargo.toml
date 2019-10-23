@@ -10,4 +10,5 @@ edition = "2018"
 stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
 ma_titan = { git = "https://github.com/Tockra/ma_titan.git" }
 uint = { git = "https://github.com/Tockra/uint.git" }
-vebtrees = {git = "https://github.com/Tockra/rust-vebtrees.git"}
+treez = {git = "https://github.com/Tockra/treez.git"}
+num = "0.2.0"
