@@ -99,5 +99,157 @@ pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Res
     Ok(values.into_boxed_slice())
 }
 
+#[derive(Clone)]
+pub struct RBTree<T> where T: Int + Default + num::Bounded {
+    rb: treez::rb::TreeRb<T,T>
+}
 
+impl<T: Int + Default + num::Bounded> PredecessorSetStatic<T> for RBTree<T> {
+    const TYPE: &'static str = "Rot-Schwarz-Baum";
+
+    fn new(elements: Box<[T]>) -> Self {
+        let mut rb = treez::rb::TreeRb::with_capacity(elements.len());
+        for &elem in elements.into_iter() {
+            rb.insert(elem,elem);
+        }
+        rb.shrink_to_fit();
+        Self {
+            rb: rb,
+        }
+    }
+
+    fn predecessor(&self,number: T) -> Option<T> {
+        self.rb.predecessor(number).map(|x| *x)
+    }
+
+    fn successor(&self,number: T) -> Option<T> {
+        self.rb.successor(number).map(|x| *x)
+    }
+}
+
+#[derive(Clone)]
+pub struct BinarySearch<T> {
+    element_list: Box<[T]>
+}
+
+impl<T: Int>  PredecessorSetStatic<T> for BinarySearch<T> {
+    fn new(elements: Box<[T]>) -> Self {
+        Self {
+            element_list: elements,
+        }
+    }
+
+    fn predecessor(&self,number: T) -> Option<T> {
+        if self.element_list.len() == 0 {
+            None
+        } else {
+            self.pred(number, 0, self.element_list.len()-1)
+        }
+    }
+
+    fn successor(&self,number: T) -> Option<T>{
+        if self.element_list.len() == 0 {
+            None
+        } else {
+            self.succ(number, 0, self.element_list.len()-1)
+        }
+    }
+
+    const TYPE: &'static str = "BinarySearch";
+}
+
+impl<T: Int> BinarySearch<T> {
+    fn succ(&self, element: T, l: usize, r: usize) -> Option<T> {
+        let mut l = l;
+        let mut r = r;
+
+        if element >= self.element_list[r] {
+            return None;
+        }
+
+        while r != l && element >= self.element_list[l]  {
+            let m = (l+r)/2;
+            if element >= self.element_list[m] {
+                l = m+1;
+            } else {
+                r = m;
+            }
+        }
+        if element < self.element_list[l] {
+            Some(self.element_list[l])
+        } else {
+            None
+        }
+    }
+
+    fn pred(&self, element: T, l: usize, r: usize) -> Option<T> {
+        let mut l = l;
+        let mut r = r;
+
+        if element <= self.element_list[l] {
+            return None;
+        }
+
+        while l != r && element <= self.element_list[r] {
+            let m = (l+r)/2;
+            if self.element_list[m] >= element {
+                r = m-1;
+            } else {
+                l = m;
+            }
+        }
+
+        if element > self.element_list[r] {
+            Some(self.element_list[r])
+        } else {
+            None
+        }
+    }
+
+
+}
+
+pub trait PredecessorSetStatic<T> {
+    fn new(elements: Box<[T]>) -> Self;
+    fn predecessor(&self,number: T) -> Option<T>;
+    fn successor(&self,number: T) -> Option<T>; // Optional
+
+    const TYPE: &'static str;
+}
+
+impl<T: Int> PredecessorSetStatic<T> for STree<T> {
+    const TYPE: &'static str = "STree";
+
+    fn new(elements: Box<[T]>) -> Self {
+         STree::<T>::new(elements)
+    }
+
+    fn predecessor(&self,number: T) -> Option<T> {
+        self.locate_or_pred(number).and_then(|x| Some(self.element_list[x]))
+    }
+
+    fn successor(&self,number: T) -> Option<T> {
+        self.locate_or_succ(number).and_then(|x| Some(self.element_list[x]))
+    }
+}
+
+impl<T: Int>  PredecessorSetStatic<T> for BTreeMap<T,T> {
+    fn new(elements: Box<[T]>) -> Self {
+        let mut n: BTreeMap<T,T> = BTreeMap::new();
+        for i in elements.iter() {
+            n.insert(*i,*i);
+        }
+        n
+    }
+
+    fn predecessor(&self,number: T) -> Option<T> {
+        self.range(T::from(0)..number).last().map(|x| *x.0)
+    }
+
+    fn successor(&self,number: T) -> Option<T>{
+        self.range(number..).next().map(|x| *x.0)
+    }
+
+    const TYPE: &'static str = "B-Baum";
+}
 
