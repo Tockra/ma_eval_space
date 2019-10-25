@@ -92,7 +92,7 @@ fn main() {
                         
                         let final_size = change.bytes_current_used + std::mem::size_of_val(&h); // Die gespeicherten Elemente abziehen
 
-                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8. ).unwrap();
+                        writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} size_bytes={}",i,build_size,((final_size as f64)/(i as f64)) * 8.).unwrap();
                         // 32 da ein extra Array vorhanden ist das 16 Byte braucht (8 Zeiger, 8 Len) + Box (8). Außerdem muss nun Object auch in einer Box leigen + 8
                         writeln!(result, "RESULT data_structure=Vektor method=new size={} build_size_bytes=0 size_bytes={}",i,(32.+(i as f64) * 2.)/(i as f64) *8. ).unwrap(); 
                     }
