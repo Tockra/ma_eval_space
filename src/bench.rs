@@ -65,8 +65,8 @@ pub fn measure<T: Typable + Int + From<u64> + Copy + Debug, E: PredecessorSetSta
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure=STree_{} method=new size={} build_size_bytes={} size_bytes={} hash_tables_bytes={} levelcount={}", data.replace("/", "_"),len,change.bytes_max_used
-                ,change.bytes_current_used, x.hash_maps_in_bytes, x.level_count).unwrap(); 
+        writeln!(result, "RESULT data_structure=STree_{} method=new size={} build_size_bytes={} size_bytes={} hash_tables_bytes={} levelcount={} number_keys={}", data.replace("/", "_"),len,change.bytes_max_used
+                ,change.bytes_current_used, x.hash_maps_in_bytes, x.level_count, x.number_of_keys).unwrap(); 
         result.flush().unwrap();
     }
 
