@@ -19,8 +19,8 @@ use super::GLOBAL;
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen T = {u40,u48,u64} . Diese Methode ist generisch und kann die normal-daten, die BTW-Run-Daten und gleichverteilte Daten einlesen.
-pub fn measure<T: Typable + Int + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: &str, name: &str) {
-    println!("Starte Speicherplatzmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
+pub fn measure<T: Typable + Int + From<u64> + Copy + Debug>(data: &str, var: u32, name: &str) {
+    println!("Starte Speicherplatzmessung. Datenstruktur: STree, Datentyp {}, Datensatz: {}", T::TYPE, data);
 
     let now = Instant::now();
     std::fs::create_dir_all(format!("./output/{}/", T::TYPE)).unwrap();
@@ -29,7 +29,7 @@ pub fn measure<T: Typable + Int + From<u64> + Copy + Debug, E: PredecessorSetSta
                 .write(true)
                 .truncate(true)
                 .create(true)
-                .open(format!("./output/{}/{}_{}_{}_{}.txt", T::TYPE,E::TYPE, name, data.replace("/", "_"), var)).unwrap());
+                .open(format!("./output/{}/STree_{}_{}_{}.txt", T::TYPE, name, data.replace("/", "_"), var)).unwrap());
 
     for dir in read_dir(format!("./testdata/{}/{}/",data, T::TYPE)).unwrap() {
         let path = dir.unwrap().path();
@@ -40,14 +40,8 @@ pub fn measure<T: Typable + Int + From<u64> + Copy + Debug, E: PredecessorSetSta
         if data != "bwt_runs" {
             let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
 
-            if var == "1" {
-                if i > 30 { 
-                    continue;
-                }
-            } else {
-                if i <= 29 {
-                    continue;
-                }
+            if i != var {
+                continue;
             }
         }
     
@@ -65,8 +59,8 @@ pub fn measure<T: Typable + Int + From<u64> + Copy + Debug, E: PredecessorSetSta
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure=STree_{} method=new size={} build_size_bytes={} size_bytes={} hash_tables_bytes={} levelcount={}", data.replace("/", "_"),len,change.bytes_max_used
-                ,change.bytes_current_used, x.hash_maps_in_bytes, x.level_count).unwrap(); 
+        writeln!(result, "RESULT data_structure=STree_{} method=new size={} build_size_bytes={} size_bytes={} hash_tables_bytes={} levelcount={} number_keys={}", name,len,change.bytes_max_used
+                ,change.bytes_current_used, x.hash_maps_in_bytes, x.level_count, x.number_of_keys).unwrap(); 
         result.flush().unwrap();
     }
 
@@ -98,28 +92,3 @@ pub fn read_from_file<T: Typable + From<u64> + Copy>(name: &str) -> std::io::Res
     }
     Ok(values.into_boxed_slice())
 }
-
-pub trait PredecessorSetStatic<T> {
-    fn new(elements: Box<[T]>) -> Self;
-    fn predecessor(&self,number: T) -> Option<T>;
-    fn successor(&self,number: T) -> Option<T>; // Optional
-
-    const TYPE: &'static str;
-}
-
-impl<T: Int> PredecessorSetStatic<T> for STree<T> {
-    const TYPE: &'static str = "STree";
-
-    fn new(elements: Box<[T]>) -> Self {
-         STree::<T>::new(GLOBAL, elements)
-    }
-
-    fn predecessor(&self,number: T) -> Option<T> {
-        self.locate_or_pred(number).and_then(|x| Some(self.element_list[x]))
-    }
-
-    fn successor(&self,number: T) -> Option<T> {
-        self.locate_or_succ(number).and_then(|x| Some(self.element_list[x]))
-    }
-}
-
