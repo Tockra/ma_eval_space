@@ -20,7 +20,7 @@ use super::GLOBAL;
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen T = {u40,u48,u64} . Diese Methode ist generisch und kann die normal-daten, die BTW-Run-Daten und gleichverteilte Daten einlesen.
-pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: &str, name: &str) {
+pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: u32, name: &str) {
     println!("Starte Speicherplatzmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
 
     let now = Instant::now();
@@ -41,14 +41,8 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
         if data != "bwt_runs" {
             let i: u32 = path.to_str().unwrap().split('^').skip(1).next().unwrap().split('.').next().unwrap().parse().unwrap();
 
-            if var == "1" {
-                if i > 30 { 
-                    continue;
-                }
-            } else {
-                if i <= 29 {
-                    continue;
-                }
+            if i != var {
+                continue;
             }
         }
     
@@ -66,7 +60,7 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
         let change = reg.change_and_reset();
 
         // Das Ergebnis wird in die stats.txt geschrieben, die von SQLPlots analysiert und geplottet werden kann
-        writeln!(result, "RESULT data_structure={}_{} method=new size={} build_size_bytes={} size_bytes={}",E::TYPE, data.replace("/", "_"),len,change.bytes_max_used,change.bytes_current_used).unwrap(); 
+        writeln!(result, "RESULT data_structure={}_{} method=new size={} build_size_bytes={} size_bytes={}",E::TYPE, name,len,change.bytes_max_used,change.bytes_current_used).unwrap(); 
         result.flush().unwrap();
     }
 
