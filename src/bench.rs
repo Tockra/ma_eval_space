@@ -44,6 +44,10 @@ pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>
             if i != var {
                 continue;
             }
+        } else {
+            if !path.to_str().unwrap().contains(var.to_string().as_str()) {
+                continue;
+            }
         }
     
         println!("{:?}",path);
