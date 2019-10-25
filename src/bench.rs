@@ -43,6 +43,10 @@ pub fn measure<T: Typable + Int + From<u64> + Copy + Debug>(data: &str, var: u32
             if i != var {
                 continue;
             }
+        } else {
+            if !path.to_str().unwrap().contains(var.to_string().as_str()) {
+                continue;
+            }
         }
     
         println!("{:?}",path);
