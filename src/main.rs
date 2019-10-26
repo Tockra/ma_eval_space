@@ -30,7 +30,7 @@ fn main() {
     }
 }
 
-fn stage1<T: Int + Typable + Default + num::Bounded + From<u64> + Copy + Debug>(args: Vec<String>) {
+fn stage1<T: 'static+ Int + Typable + Default + num::Bounded + From<u64> + Copy + Debug>(args: Vec<String>) {
     match args[1].as_ref() {
         "stree" => stage2::<T>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
         //"rbtree" => stage2::<T,VEBTree>(args[3].as_ref(), args[4].as_ref()),
@@ -40,6 +40,6 @@ fn stage1<T: Int + Typable + Default + num::Bounded + From<u64> + Copy + Debug>(
     }
 }
 
-fn stage2<T: Int + Typable + From<u64> + Copy + Debug>(arg: &str, var: &str, name: &str) {
+fn stage2<T: 'static + Int + Typable + From<u64> + Copy + Debug>(arg: &str, var: &str, name: &str) {
     measure::<T>(arg, var.parse::<u32>().unwrap(), name);
 }
