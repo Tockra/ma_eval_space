@@ -20,7 +20,7 @@ use super::GLOBAL;
 
 /// Diese Methode dient der Hauptspeichermessung der new()-Methode verschiedener zu untersuchender Datenstrukturen E
 /// mit elementen T = {u40,u48,u64} . Diese Methode ist generisch und kann die normal-daten, die BTW-Run-Daten und gleichverteilte Daten einlesen.
-pub fn measure<T: Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: u32, name: &str) {
+pub fn measure<T: 'static + Typable + From<u64> + Copy + Debug, E: PredecessorSetStatic<T>>(data: &str, var: u32, name: &str) {
     println!("Starte Speicherplatzmessung. Datenstruktur: {}, Datentyp {}, Datensatz: {}", E::TYPE, T::TYPE, data);
 
     let now = Instant::now();
