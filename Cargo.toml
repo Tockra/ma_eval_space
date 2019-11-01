@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
-ma_titan = { git = "https://github.com/Tockra/ma_titan.git", branch="hash_brown_hash" }
+ma_titan = { git = "https://github.com/Tockra/ma_titan.git", branch="hash_brown_hash_u48_1" }
 uint = { git = "https://github.com/Tockra/uint.git" }
 treez = {git = "https://github.com/Tockra/treez.git"}
 num = "0.2.0"
