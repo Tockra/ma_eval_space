@@ -24,8 +24,6 @@ fn main() {
     } 
 
 	match args[2].as_ref() {
-		"u40" => stage1::<u40>(args),
-		"u48" => stage1::<u48>(args),
 		"u64" => stage1::<u64>(args),
 		_ => println!("Bitte verwende {} <stree|rbtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs> <variant=0,..,32> <name>",args[0]),
     }
