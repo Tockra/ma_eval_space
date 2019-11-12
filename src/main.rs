@@ -94,8 +94,8 @@ fn main() {
 
                         writeln!(result, "RESULT data_structure=Mphf-u16,usize- method=new size={} build_size_bytes={} bit_per_element={}",i,build_size,((final_size as f64)/(i as f64)) * 8.).unwrap();
                         // 32 da ein extra Array vorhanden ist das 16 Byte braucht (8B Zeiger, 8B Len).
-                        writeln!(result, "RESULT data_structure=Vektor_16 method=new size={} build_size_bytes=0 bit_per_element={}",i,(16.+(i as f64) * 2. )/(i as f64) *8.).unwrap(); 
-                        writeln!(result, "RESULT data_structure=Vektor_8 method=new size={} build_size_bytes=0 bit_per_element={}",i,(16.+(i as f64) * 1. )/(i as f64) *8.).unwrap(); 
+                        writeln!(result, "RESULT data_structure=Array_16 method=new size={} build_size_bytes=0 bit_per_element={}",i,(16.+(i as f64) * 2. )/(i as f64) *8.).unwrap(); 
+                        writeln!(result, "RESULT data_structure=Array_8 method=new size={} build_size_bytes=0 bit_per_element={}",i,(16.+(i as f64) * 1. )/(i as f64) *8.).unwrap(); 
                     }
                     }
                 
