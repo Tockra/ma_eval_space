@@ -223,11 +223,11 @@ impl<T: Int> PredecessorSetStatic<T> for STree<T> {
     }
 
     fn predecessor(&self,number: T) -> Option<T> {
-        self.locate_or_pred(number).and_then(|x| Some(self.element_list[x]))
+        self.locate_or_pred(number).and_then(|x| Some(*x))
     }
 
     fn successor(&self,number: T) -> Option<T> {
-        self.locate_or_succ(number).and_then(|x| Some(self.element_list[x]))
+        self.locate_or_succ(number).and_then(|x| Some(*x))
     }
 }
 
