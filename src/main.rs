@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::fmt::Debug;
 use stats_alloc::{StatsAlloc, INSTRUMENTED_SYSTEM};
 use std::alloc::System;
-
+use rbtree::RBTree;
 #[global_allocator]
 static GLOBAL: &StatsAlloc<System> = &INSTRUMENTED_SYSTEM;
 
@@ -34,7 +34,7 @@ fn main() {
 fn stage1<T: 'static + Int + Typable + Default + num::Bounded + From<u64> + Copy + Debug>(args: Vec<String>) {
     match args[1].as_ref() {
         "stree" => stage2::<T,STree<T>>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
-        "rbtree" => stage2::<T,RBTree<T>>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
+        "rbtree" => stage2::<T,RBTree<T,T>>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
         "btree" => stage2::<T,BTreeMap<T,T>>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
 		"binary" => stage2::<T,BinarySearch<T>>(args[3].as_ref(), args[4].as_ref(), args[5].as_ref()),
         _ => println!("Bitte verwende {} <stree|rbtree|btree|binary> <u40|u48|u64> <uniform|normal|bwt_runs> <variant=0,..,32> <name>",args[0]),

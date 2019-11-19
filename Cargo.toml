@@ -10,5 +10,5 @@ edition = "2018"
 stats_alloc = { git = "https://github.com/Tockra/stats_alloc.git" }
 ma_titan = { git = "https://github.com/Tockra/ma_titan.git" }
 uint = { git = "https://github.com/Tockra/uint.git" }
-treez = {git = "https://github.com/Tockra/treez.git"}
+rbtree = {git = "https://github.com/Tockra/rbtree-rs"}
 num = "0.2.0"
