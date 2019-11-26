@@ -16,8 +16,8 @@ Das File eval-scripts/space/run-eval.sh kann wie folgt verwendet werden:
 - rbtree: Rot-Schwarz-Baum (bitte master-Branch verwenden)
 - binary: Binäre Suche (bitte master-Branch verwenden)
 
-**<Ordnername>**
-Ordnername von ma_eval_space (siehe oben)
+**< Ordnername >**
+- Ordnername von ma_eval_space (siehe oben)
 
 **<verteilung={normal,uniform}>**
 - uniform: Gleichverteilung
