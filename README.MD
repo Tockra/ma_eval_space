@@ -52,7 +52,7 @@ cd path/to/eval-scripts/space/
 
 ## Branches
 Für die verschiedenen Branches von `ma_titan` existieren hier gleichnamige Branches, in denen der entsprechende Branch von `ma_titan` verwendet wird. Folgende Auflistung gibt an, wie
-die Branches den Branches der Masterarbeit zuzuordnen sind.
+die Branches den Branches der Arbeit zuzuordnen sind.
 
 
 Die Branches können wie folgt zugeordnet werden:
